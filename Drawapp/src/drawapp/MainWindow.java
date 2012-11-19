@@ -59,12 +59,15 @@ public class MainWindow {
         postMessage("Drawing Complete.");
 
         gridButtons.setAlignment(Pos.CENTER);
+        gridButtons.setBackgroundColour("#E8E8E8");
         buttonClose.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
                 Platform.exit();
             }
         });
+        gridButtons.add(buttonComplete);
+        gridButtons.add(buttonNext);
         gridButtons.add(buttonClose);
         gridpane.add(gridButtons, 0, 2);
 
