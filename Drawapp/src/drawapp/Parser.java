@@ -3,7 +3,13 @@ package drawapp;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.Reader;
+import java.util.ArrayList;
 import java.util.StringTokenizer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.control.Button;
 import javafx.scene.paint.Color;
 
 public class Parser {
@@ -11,6 +17,7 @@ public class Parser {
     private BufferedReader reader;
     private ImagePanel picture;
     private MainWindow frame;
+    private int i = 0;
 
     public Parser(Reader reader, ImagePanel picture, MainWindow frame) {
         this.reader = new BufferedReader(reader);
@@ -222,5 +229,44 @@ public class Parser {
         } else {
             throw new ParseException("Missing Integer value");
         }
+    }
+
+    public void parseWithButtons(final Button b, final Button complete) throws IOException {
+        frame.postMessage("Press Next to draw image step by step or Complete to draw the complete image");
+        String line = reader.readLine();
+        final ArrayList<String> asl = new ArrayList<String>();
+        while (line != null) {
+            asl.add(line);
+            line = reader.readLine();
+        }
+        b.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                try {
+                    frame.postMessage("Press Next to continue to draw image");
+                    parseLine(asl.get(i));
+                    i++;
+                    if (i == asl.size()) {
+                        frame.postMessage("Drawing complete.");
+                        b.setDisable(true);
+                    }
+                } catch (ParseException ex) {
+                    Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        complete.setOnAction(new EventHandler<ActionEvent>() {
+            public void handle(ActionEvent event) {
+                try {
+                    for (String line : asl) {
+                        parseLine(line);
+                    }
+                    frame.postMessage("Drawing complete.");
+                    b.setDisable(true);
+                    complete.setDisable(true);
+                } catch (ParseException ex) {
+                    Logger.getLogger(Parser.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
     }
 }

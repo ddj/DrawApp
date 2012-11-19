@@ -26,6 +26,8 @@ public class MainWindow {
     ImagePanel gridButtons = new ImagePanel(800, 50);
     private TextArea gridText = new TextArea();
     private Button buttonClose = new Button("CloseWindow");
+    Button buttonNext = new Button("Next");
+    Button buttonComplete = new Button("Complete");
 
     public MainWindow(Stage stage) {
         this(stage, defaultWidth, defaultHeight);
@@ -67,6 +69,14 @@ public class MainWindow {
         gridpane.add(gridButtons, 0, 2);
 
         return gridpane;
+    }
+
+    public Button getNext() {
+        return buttonNext;
+    }
+
+    public Button getComplete() {
+        return buttonComplete;
     }
 
     public ImagePanel getImagePanel() {
