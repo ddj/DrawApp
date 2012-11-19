@@ -1,83 +1,94 @@
 package drawapp;
 
-import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
-import javafx.geometry.Pos;
-import javafx.scene.Group;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TextArea;
-import javafx.scene.layout.*;
-import javafx.stage.Stage;
 
-/**
- *
- * @author David
- */
-public class MainWindow {
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.SwingUtilities;
+import java.awt.BorderLayout;
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-    public static final int defaultWidth = 800;
-    public static final int defaultHeight = 600;
-    Scene scene;
-    private Stage primaryStage;
-    ImagePanel gridPicture;
-    ImagePanel gridButtons = new ImagePanel(800, 50);
-    private TextArea gridText = new TextArea();
-    private Button buttonClose = new Button("CloseWindow");
+public class MainWindow extends JFrame implements ActionListener
+{
+  public static final int DEFAULT_WIDTH = 500;
+  public static final int DEFAULT_HEIGHT = 300;
 
-    public MainWindow(Stage stage) {
-        this(stage, defaultWidth, defaultHeight);
-    }
+  private int width;
+  private int height;
 
-    public MainWindow(Stage primaryStage, int width, int height) {
-        primaryStage.setTitle("Draw App");
-        this.primaryStage = primaryStage;
-        Group root = new Group();
-        scene = new Scene(root, defaultWidth, defaultHeight);
-        GridPane gridpane = buildGUI();
-        root.getChildren().add(gridpane);
-        primaryStage.setScene(scene);
-    }
+  private ImagePanel imagePanel;
+  private JTextArea messageView;
+  private JButton quitButton;
 
-    private GridPane buildGUI() {
-        GridPane gridpane = new GridPane();
-        gridpane.setHgap(10);
-        gridpane.setVgap(0);
+  public MainWindow()
+  {
+    this(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  }
 
-        gridPicture = new ImagePanel(800, 400);
-        gridpane.add(gridPicture, 0, 0);
+  public MainWindow(int width, int height)
+  {
+    super("Draw App");
+    this.width = width;
+    this.height = height;
+    buildGUI();
+    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    this.pack();
+    this.setVisible(true);
+  }
 
-        gridText.setWrapText(true);
-        gridText.setPrefWidth(800);
-        gridText.setPrefHeight(150);
-        GridPane.setHalignment(gridText, HPos.CENTER);
-        gridpane.add(gridText, 0, 1);
-        postMessage("Drawing Complete.");
+  private void buildGUI()
+  {
+    JPanel backPanel = new JPanel();
+    backPanel.setLayout(new BorderLayout());
+    imagePanel = new ImagePanel(width, height);
+    backPanel.add(imagePanel,BorderLayout.CENTER);
 
-        gridButtons.setAlignment(Pos.CENTER);
-        buttonClose.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                Platform.exit();
-            }
+    messageView = new JTextArea();
+    messageView.setRows(6);
+    messageView.setEditable(false);
+    JScrollPane scrollPane = new JScrollPane(messageView);
+
+    JPanel lowerPanel = new JPanel();
+    lowerPanel.setLayout(new BorderLayout());
+    lowerPanel.add(scrollPane,BorderLayout.CENTER);
+
+    JPanel buttonPanel = new JPanel();
+    buttonPanel.setLayout(new FlowLayout());
+    quitButton = new JButton("Close Window");
+    buttonPanel.add(quitButton);
+    quitButton.addActionListener(this);
+    lowerPanel.add(buttonPanel,BorderLayout.SOUTH);
+
+    backPanel.add(lowerPanel,BorderLayout.SOUTH);
+    this.add(backPanel);
+  }
+
+  public ImagePanel getImagePanel()
+  {
+    return imagePanel;
+  }
+
+  public void postMessage(final String s)
+  {
+     SwingUtilities.invokeLater(
+        new Runnable()
+        {
+          public void run()
+          {
+            messageView.append(s);
+            messageView.repaint();
+          }
         });
-        gridButtons.add(buttonClose);
-        gridpane.add(gridButtons, 0, 2);
+  }
 
-        return gridpane;
-    }
-
-    public ImagePanel getImagePanel() {
-        return gridPicture;
-    }
-
-    public void postMessage(final String s) {
-        gridText.setText(s);
-    }
-
-    public Stage getStage() {
-        return primaryStage;
-    }
+  public void actionPerformed(ActionEvent actionEvent)
+  {
+    setVisible(false);
+    dispose();
+    System.exit(0);
+  }
 }
