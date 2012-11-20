@@ -5,6 +5,7 @@ import javafx.scene.Node;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -33,6 +34,9 @@ public class ImagePanel extends HBox {
         this.add(picture);
         this.setPrefHeight(height);
         this.setPrefWidth(width);
+        ImagePanel.setHgrow(picture, Priority.NEVER);
+        this.setMaxHeight(height);
+        this.setMaxWidth(width);
     }
 
     public void add(Node g) {

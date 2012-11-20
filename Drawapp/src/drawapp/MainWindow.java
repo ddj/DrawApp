@@ -1,6 +1,8 @@
 package drawapp;
 
+import java.io.File;
 import javafx.application.Platform;
+import javafx.embed.swing.SwingFXUtils;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.HPos;
@@ -9,8 +11,10 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+import javax.imageio.ImageIO;
 
 /**
  *
@@ -66,9 +70,24 @@ public class MainWindow {
                 Platform.exit();
             }
         });
+        Button buttonSave = new Button("Save");
+        buttonSave.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                WritableImage wim = new WritableImage(defaultHeight,defaultWidth );
+                gridPicture.snapshot(null, wim);          
+                File file = new File("Image.png");
+                 try {
+                    ImageIO.write(SwingFXUtils.fromFXImage(wim, null), "png", file);
+                 } catch (Exception s) 
+                 {
+                }
+            }
+        });
         gridButtons.add(buttonComplete);
         gridButtons.add(buttonNext);
         gridButtons.add(buttonClose);
+        gridButtons.add(buttonSave);
         gridpane.add(gridButtons, 0, 2);
 
         return gridpane;
@@ -93,4 +112,11 @@ public class MainWindow {
     public Stage getStage() {
         return primaryStage;
     }
+    
+    public void changeSize(int width,int height){
+      gridPicture.setPrefHeight(height-200);
+      gridPicture.setPrefWidth(width);
+      gridText.setPrefWidth(width);
+      gridButtons.setPrefWidth(width);
+  }
 }
